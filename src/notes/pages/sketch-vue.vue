@@ -1,15 +1,15 @@
 <template>
   <div class="sketch flex justify-content-center align-items-center">
-    <custom-tag></custom-tag>
+    <custom-note></custom-note>
   </div>
 </template>
 
 <script>
-import CustomTag from "../components/custom-tag.vue";
+import CustomNote from "../components/custom-note.vue";
 //Components
 export default {
   components: {
-    CustomTag,
+    CustomNote,
   },
 };
 </script>
