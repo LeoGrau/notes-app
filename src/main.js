@@ -16,8 +16,10 @@ import "primeflex/primeflex.css";
 
 //Components
 import InputText from "primevue/inputtext";
+import TextArea from "primevue/textarea";
 import Password from "primevue/password";
 import Button from "primevue/button";
+import Dialog from "primevue/dialog";
 
 //My Styles
 import "./assets/main.css";
@@ -32,5 +34,7 @@ app.use(router);
 app.component("pv-input-text", InputText);
 app.component("pv-password", Password);
 app.component("pv-button", Button);
+app.component("pv-dialog", Dialog);
+app.component("pv-text-area", TextArea);
 
 app.mount("#app");

@@ -1,15 +1,15 @@
 <template>
   <div class="sketch flex justify-content-center align-items-center">
-    <custom-note></custom-note>
+    <crud-note-dialog></crud-note-dialog>
   </div>
 </template>
 
 <script>
-import CustomNote from "../components/custom-note.vue";
+import CrudNoteDialog from "../components/crud-note-dialog.vue";
 //Components
 export default {
   components: {
-    CustomNote,
+    CrudNoteDialog,
   },
 };
 </script>
