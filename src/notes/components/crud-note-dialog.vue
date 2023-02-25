@@ -1,13 +1,15 @@
 <template>
   <div class="crud-note-dialog">
     <pv-dialog
+      @hide="this.$emit('closeDialog')"
       :style="{ width: '50vw' }"
       :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
       v-model:visible="visible"
     >
       <template #header>
-        <h2 v-show="mode == noteDialogModes.Create">Create Note</h2>
-        <h2 v-show="mode == noteDialogModes.Update">Update Note</h2>
+        <h2 v-show="_mode == noteDialogModes.Create">Create Note</h2>
+        <h2 v-show="_mode == noteDialogModes.Update">Update Note</h2>
+        <h2 v-show="_mode == noteDialogModes.Read">See Note</h2>
       </template>
       <form class="p-fluid mt-4">
         <div class="field mb-4">
@@ -20,8 +22,7 @@
           <div class="p-float-label">
             <pv-text-area
               :autoResize="true"
-              v-model="titleInput"
-              au
+              v-model="contentInput"
             ></pv-text-area>
             <label for="titleInput">Content</label>
           </div>
@@ -31,12 +32,14 @@
         <div class="actions">
           <pv-button
             label="Save"
-            @click="this.$emit('closeDialog')"
+            @click="
+              _mode == noteDialogModes.Create ? addNote() : updateNote(_noteId)
+            "
           ></pv-button>
           <pv-button
             label="Cancel"
             class="p-button-danger"
-            @click="this.$emit('closeDialog')"
+            @click="this.visible = false"
           ></pv-button>
         </div>
       </template>
@@ -45,12 +48,29 @@
 </template>
 
 <script>
+//Enums
 import NoteDialogModes from "../enums/note-dialog-modes.js";
+//Service
+import NoteService from "../services/note/note.service";
+//Models
+//import Note from "../models/note/note.model";
+import UpdateNote from "../models/note/update-note.model";
+import AddNote from "../models/note/add-note.model";
+
 export default {
   props: {
     _visible: {
       required: true,
       type: Boolean,
+    },
+    _noteId: {
+      default: () => 0,
+      type: Number,
+    },
+    _mode: {
+      type: Number,
+      required: true,
+      default: 0,
     },
   },
   data() {
@@ -58,19 +78,92 @@ export default {
       noteDialogModes: NoteDialogModes,
       mode: NoteDialogModes.Update,
       visible: this._visible,
+      noteId: this._noteId,
       //Input
       titleInput: "",
+      contentInput: "",
     };
   },
   created() {
     console.log("visible from crud: ", this.visible);
+    this.setNote(this.noteId);
   },
   watch: {
     _visible() {
       this.visible = this._visible;
+      if (this.visible && this._mode != this.noteDialogModes.Create) {
+        this.setNote(this.noteId);
+      } else {
+        this.resetValues();
+      }
+      console.log(this.titleInput, this.contentInput);
+    },
+    _noteId() {
+      this.noteId = this._noteId;
+      console.log(this.noteId);
+    },
+    titleInput(current) {
+      console.log(current);
+      this.titleInput = current;
     },
   },
-  methods: {},
+  methods: {
+    //Dialog literals
+    closeDialog() {
+      this.visible = false;
+    },
+    resetValues() {
+      this.titleInput = "";
+      this.contentInput = "";
+    },
+    setNote(noteId) {
+      console.log(noteId);
+      NoteService.findNote(noteId).then((res) => {
+        if (res.status == 200) {
+          this.titleInput = res.data.title;
+          this.contentInput = res.data.content;
+        } else {
+          console.log("Error");
+        }
+      });
+    },
+    updateNote(noteId) {
+      const findNote = NoteService.findNote().then((res) => {
+        this.titleInput = res.data.title;
+        this.contentInput = res.data.content;
+      });
+
+      var updatedNote = new UpdateNote(
+        this.titleInput,
+        this.contentInput,
+        false
+      );
+
+      const updateNote = NoteService.updateNote(noteId, updatedNote).then(
+        (res) => {
+          console.log(res.data);
+        }
+      );
+
+      Promise.all([findNote, updateNote, this.closeDialog()]).then((res) => {
+        console.log(res);
+      });
+    },
+    addNote() {
+      var newNote = new AddNote(this.titleInput, this.contentInput);
+      NoteService.createNote(newNote).then(() => {
+        this.visible = false;
+        this.$toast.add({
+          severity: "success",
+          summary: "Confirmed",
+          detail: "Note added",
+          life: 3000,
+        });
+      });
+      this.$emit("closeDialog");
+      this.$emit("notesChange");
+    },
+  },
 };
 </script>
 

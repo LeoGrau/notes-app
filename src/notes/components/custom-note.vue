@@ -11,7 +11,9 @@
             <h3>{{ note.title }}</h3>
             <p>
               <strong>Date: </strong>
-              <span>{{ note.date.toLocaleString().substring(0, 18) }}</span>
+              <span>{{
+                new Date(note.lastTimeEdited).toLocaleDateString()
+              }}</span>
             </p>
           </div>
         </div>
@@ -32,18 +34,13 @@
 </template>
 
 <script>
-import Note from "../models/note.model.js";
+import Note from "../models/note/note.model.js";
 
 export default {
   props: {
-    note: {
-      type: Note,
-      default: new Note(
-        1,
-        "title",
-        "content",
-        new Date("December 1, 1995 17:15:00")
-      ),
+    _note: {
+      type: Object,
+      required: true,
     },
   },
   data() {
@@ -53,23 +50,46 @@ export default {
         {
           icon: "bi bi-trash-fill",
           event: () => {
-            this.$emit("deleteNote");
+            this.$emit("deleteNote", this._note.noteId);
           },
         },
         {
           icon: "bi bi-archive-fill",
           event: () => {
-            this.$emit("archiveNote");
+            this.$emit("archiveNote", this._note.noteId);
           },
         },
         {
           icon: "bi bi-pencil-fill",
           event: () => {
-            this.$emit("editNote");
+            this.$emit("editNote", this._note.noteId);
           },
         },
       ],
+      note: Note,
     };
+  },
+  async mounted() {
+    await this.setNote();
+  },
+  async created() {
+    await this.setNote().then;
+  },
+
+  methods: {
+    async setNote() {
+      await (this.note = new Note(
+        this._note.noteId,
+        this._note.title,
+        this._note.content,
+        this._note.lastTimeEdited
+      ));
+    },
+  },
+  watch: {
+    _note() {
+      this.note = this._note;
+    },
   },
 };
 </script>

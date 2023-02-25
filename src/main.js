@@ -20,6 +20,11 @@ import TextArea from "primevue/textarea";
 import Password from "primevue/password";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+import ConfirmDialog from "primevue/confirmdialog";
+import Toast from "primevue/toast";
+//Primevue services
+import ConfirmationService from "primevue/confirmationservice";
+import ToastService from "primevue/toastservice";
 
 //My Styles
 import "./assets/main.css";
@@ -27,6 +32,8 @@ import "./assets/main.css";
 const app = createApp(App);
 
 app.use(createPinia());
+app.use(ConfirmationService);
+app.use(ToastService);
 app.use(PrimeVue, { ripple: true });
 app.use(router);
 
@@ -36,5 +43,7 @@ app.component("pv-password", Password);
 app.component("pv-button", Button);
 app.component("pv-dialog", Dialog);
 app.component("pv-text-area", TextArea);
+app.component("pv-confirm-dialog", ConfirmDialog);
+app.component("pv-toast", Toast);
 
 app.mount("#app");
