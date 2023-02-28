@@ -5,6 +5,14 @@ class NoteService {
     return http.get("/note");
   }
 
+  listAllArchivedNotes() {
+    return http.get("/note/archived");
+  }
+
+  listAllNotArchivedNotes() {
+    return http.get("/note/not-archived");
+  }
+
   findNote(noteId) {
     return http.get(`/note/${noteId}`).catch((error) => error.response);
   }
@@ -19,6 +27,10 @@ class NoteService {
 
   deleteNote(noteId) {
     return http.delete(`/note/${noteId}`);
+  }
+
+  archiveNote(noteId, status) {
+    return http.put(`/note/status/${noteId}`, status);
   }
 }
 

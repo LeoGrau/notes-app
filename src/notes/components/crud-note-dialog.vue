@@ -102,10 +102,6 @@ export default {
       this.noteId = this._noteId;
       console.log(this.noteId);
     },
-    titleInput(current) {
-      console.log(current);
-      this.titleInput = current;
-    },
   },
   methods: {
     //Dialog literals
@@ -140,28 +136,23 @@ export default {
       );
 
       const updateNote = NoteService.updateNote(noteId, updatedNote).then(
-        (res) => {
-          console.log(res.data);
+        () => {
+          this.$emit("noteChanges");
         }
       );
 
-      Promise.all([findNote, updateNote, this.closeDialog()]).then((res) => {
-        console.log(res);
+      Promise.all([findNote, updateNote, this.closeDialog()]).then(() => {
+        console.log("I did it!");
+        //this.$emit("noteChanges");
       });
     },
     addNote() {
       var newNote = new AddNote(this.titleInput, this.contentInput);
-      NoteService.createNote(newNote).then(() => {
-        this.visible = false;
-        this.$toast.add({
-          severity: "success",
-          summary: "Confirmed",
-          detail: "Note added",
-          life: 3000,
-        });
+      const addNote = NoteService.createNote(newNote);
+
+      Promise.all([addNote, this.closeDialog()]).then(() => {
+        this.$emit("noteChanges");
       });
-      this.$emit("closeDialog");
-      this.$emit("notesChange");
     },
   },
 };

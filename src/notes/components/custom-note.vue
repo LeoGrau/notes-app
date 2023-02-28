@@ -34,7 +34,10 @@
 </template>
 
 <script>
+//Models
 import Note from "../models/note/note.model.js";
+//Service
+import NoteService from "../services/note/note.service";
 
 export default {
   props: {
@@ -42,48 +45,73 @@ export default {
       type: Object,
       required: true,
     },
+    _isArchived: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
+      note: Note.prototype,
       //Data for component
-      actions: [
+      actions: [],
+    };
+  },
+  created() {
+    this.setNote();
+    this.setActions();
+  },
+
+  methods: {
+    setNote() {
+      this.note = new Note(
+        this._note.noteId,
+        this._note.title,
+        this._note.content,
+        this._note.lastTimeEdited,
+        this._note.archived
+      );
+    },
+    archiveThisNote() {
+      NoteService.archiveNote(this.note.noteId, true).then(() => {
+        this.$emit("noteStatusChanged");
+      });
+    },
+    restoreThisNote() {
+      NoteService.archiveNote(this.note.noteId, false).then(() => {
+        this.$emit("noteStatusChanged");
+      });
+    },
+    setActions() {
+      this.actions = [
         {
           icon: "bi bi-trash-fill",
           event: () => {
             this.$emit("deleteNote", this._note.noteId);
           },
         },
-        {
-          icon: "bi bi-archive-fill",
-          event: () => {
-            this.$emit("archiveNote", this._note.noteId);
-          },
-        },
+        (() => {
+          return this._isArchived
+            ? {
+                icon: "bi bi-upload",
+                event: () => {
+                  this.restoreThisNote();
+                },
+              }
+            : {
+                icon: "bi bi-archive-fill",
+                event: () => {
+                  this.archiveThisNote();
+                },
+              };
+        })(),
         {
           icon: "bi bi-pencil-fill",
           event: () => {
             this.$emit("editNote", this._note.noteId);
           },
         },
-      ],
-      note: Note,
-    };
-  },
-  async mounted() {
-    await this.setNote();
-  },
-  async created() {
-    await this.setNote().then;
-  },
-
-  methods: {
-    async setNote() {
-      await (this.note = new Note(
-        this._note.noteId,
-        this._note.title,
-        this._note.content,
-        this._note.lastTimeEdited
-      ));
+      ];
     },
   },
   watch: {

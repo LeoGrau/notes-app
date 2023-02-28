@@ -3,6 +3,7 @@
   <pv-confirm-dialog></pv-confirm-dialog>
   <crud-note-dialog
     @closeDialog="visible = false"
+    @noteChanges="getNotes()"
     v-model:_visible="visible"
     v-model:_noteId="noteId"
     v-model:_mode="mode"
@@ -31,7 +32,9 @@
           @deleteNote="showConfirmDeleteDialog(note.noteId)"
           @showNote="showDialog(note.noteId)"
           @editNote="showEditDialog(note.noteId)"
+          @noteStatusChanged="getNotes()"
           :_note="note"
+          :_isArchived="false"
         ></custom-note>
       </div>
     </div>
@@ -72,7 +75,7 @@ export default {
   },
   methods: {
     getNotes() {
-      NoteService.listAllNotes().then((res) => {
+      NoteService.listAllNotArchivedNotes().then((res) => {
         this.notes = res.data;
       });
     },
@@ -85,20 +88,22 @@ export default {
       console.log(noteId);
     },
     showConfirmDeleteDialog(noteId) {
+      const deleteNote = Promise.resolve(this.deleteNote(noteId));
       this.$confirm.require({
         message: "Are you sure you want to delete this note?",
         header: "Confirmation",
         icon: "pi pi-info-circle",
         acceptClass: "p-button-danger",
-        accept: () => {
-          this.$toast.add({
-            severity: "info",
-            summary: "Confirmed",
-            detail: "Record deleted",
-            life: 3000,
+        accept: async () => {
+          deleteNote.then(() => {
+            this.getNotes();
+            this.$toast.add({
+              severity: "success",
+              summary: "Confirmed",
+              detail: "Record deleted",
+              life: 3000,
+            });
           });
-          this.deleteNote(noteId);
-          this.getNotes();
         },
         reject: () => {
           this.$toast.add({
@@ -118,6 +123,18 @@ export default {
   },
   created() {
     this.getNotes();
+  },
+
+  watch: {
+    notes(after, before) {
+      console.log("after", after);
+      console.log("before", before);
+    },
+  },
+  computed: {
+    mynotes() {
+      return this.notes;
+    },
   },
 };
 </script>
