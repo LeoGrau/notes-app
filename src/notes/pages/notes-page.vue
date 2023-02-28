@@ -9,9 +9,12 @@
     v-model:_mode="mode"
   ></crud-note-dialog>
   <div class="notes-page p-4">
-    <div class="mb-2 flex gap-2">
+    <div class="mb-2 flex gap-5 align-items-center">
       <h1>My Notes</h1>
-      <div class="actions">
+      <div class="actions flex align-items-center gap-3">
+        <router-link to="archived-notes"
+          ><span> > Go to archived notes</span></router-link
+        >
         <pv-button
           label="New Note"
           icon="bi bi-plus-lg"
