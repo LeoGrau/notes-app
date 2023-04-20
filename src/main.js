@@ -22,6 +22,7 @@ import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import ConfirmDialog from "primevue/confirmdialog";
 import Toast from "primevue/toast";
+import ProgressSpinner from 'primevue/progressspinner';
 //Primevue services
 import ConfirmationService from "primevue/confirmationservice";
 import ToastService from "primevue/toastservice";
@@ -45,5 +46,6 @@ app.component("pv-dialog", Dialog);
 app.component("pv-text-area", TextArea);
 app.component("pv-confirm-dialog", ConfirmDialog);
 app.component("pv-toast", Toast);
+app.component("pv-progress-spinner", ProgressSpinner);
 
 app.mount("#app");

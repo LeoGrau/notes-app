@@ -20,6 +20,7 @@
         class="col-12 md:col-6 lg:col-4 xl:col-3"
       >
         <custom-note
+          v-model:_isLoading="isLoading"
           @deleteNote="showConfirmDeleteDialog(note.noteId)"
           @showNote="showDialog(note.noteId)"
           @editNote="showEditDialog(note.noteId)"
@@ -62,12 +63,14 @@ export default {
       visible: false,
       noteId: 0,
       mode: 0,
+      isLoading: true,
     };
   },
   methods: {
     getNotes() {
       NoteService.listAllArchivedNotes().then((res) => {
         this.notes = res.data;
+        this.isLoading = false;
       });
     },
     deleteNote(noteId) {

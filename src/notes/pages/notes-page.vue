@@ -27,11 +27,13 @@
     </div>
     <div class="grid">
       <div
+        v-show="!isLoading"
         v-for="note in notes"
         :key="note.id"
         class="col-12 md:col-6 lg:col-4 xl:col-3"
       >
         <custom-note
+          v-model:_isLoading="isLoading"
           @deleteNote="showConfirmDeleteDialog(note.noteId)"
           @showNote="showDialog(note.noteId)"
           @editNote="showEditDialog(note.noteId)"
@@ -48,8 +50,6 @@
 //Custom Components
 import CustomNote from "../components/custom-note.vue";
 import CrudNoteDialog from "../components/crud-note-dialog.vue";
-//Models
-import Note from "../models/note/note.model";
 //Enums
 import NoteDialogModes from "../enums/note-dialog-modes";
 //Services
@@ -63,23 +63,19 @@ export default {
   data() {
     return {
       noteDialogModes: NoteDialogModes,
-      notes: [
-        new Note(1, "title", "content", new Date("December 1, 1995 17:15:00")),
-        new Note(2, "title", "content", new Date("December 1, 1995 17:15:00")),
-        new Note(3, "title", "content", new Date("December 1, 1995 17:15:00")),
-        new Note(4, "title", "content", new Date("December 1, 1995 17:15:00")),
-        new Note(5, "title", "content", new Date("December 1, 1995 17:15:00")),
-      ],
+      notes: [],
       //Transfer variables
       visible: false,
       noteId: 0,
       mode: 0,
+      isLoading: true,
     };
   },
   methods: {
     getNotes() {
       NoteService.listAllNotArchivedNotes().then((res) => {
         this.notes = res.data;
+        this.isLoading = false;
       });
     },
     deleteNote(noteId) {

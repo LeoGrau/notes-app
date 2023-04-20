@@ -1,6 +1,7 @@
 <template>
   <div class="custom-note">
-    <div class="card p-2">
+    <pv-progress-spinner v-show="_isLoading"></pv-progress-spinner>
+    <div class="card p-2" v-show="!_isLoading">
       <div class="flex">
         <div class="left flex gap-2 align-items-center">
           <i
@@ -49,6 +50,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    _isLoading: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -64,6 +69,7 @@ export default {
 
   methods: {
     setNote() {
+      this.isLoading = false;
       this.note = new Note(
         this._note.noteId,
         this._note.title,
